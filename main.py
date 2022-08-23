@@ -1,46 +1,41 @@
 from ast import AsyncFunctionDef
 import numpy as np
 import sympy as smp
-import scipy.fft as scp 
-from sympy import fft
-import matplotlib.pyplot as mpl
+import scipy.fft as scp
+import matplotlib.pyplot as plt
 
-def DFT(x):
-    N = len(x)
-    n = np.arange(N)
-    k = n.reshape((N, 1))
-    e = np.exp(-2j * np.pi * k * n / N)
-    X = np.dot(e, x)
-    
-    return X
-
-with open("./calamar_pda2.txt") as f:
+#open file
+with open("./calamar_pda.txt") as f:
     contents = f.readlines()
     info = contents[1].split(',')
 
-#===FUNCION ORIGINAL===
+#getttt info
 info = list(map(lambda e: float(e), info))
-N = len(info)
-T = 100*N
 
-t = np.linspace(0,T,N)
 
-if False:
-    mpl.plot(t, info)
-    mpl.show()
+#parameters
+Fs = 10_000 #sampling freq
+tstep = 1 / Fs #sample time interv
+N = len(info) #number of samples
+fstep = Fs / N #freq interval
 
-print('hello')
+#segment graphic
+fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1)
 
+#plot original func
+
+t = np.linspace(0, (N-1)*tstep, N)
+ax1.plot(t, info)
+
+print('hasta aca todo bien')
 #===MUESTRA FUNCION TRANSFORMADA
-infodft = DFT(info)
-w = scp.fftfreq(len(t), np.diff(t)[0])
+infofft = np.abs(np.fft.fft(info))
+# w = scp.fftfreq(len(t), np.diff(t)[0])
+f = np.linspace(0, (N-1)*fstep, N)
+if(len(f) == len(infofft)):
+    print('bien')
+    ax2.plot(f, infofft)
+else:
+    print('its not working')
 
-
-if False:
-    mpl.plot(w[:N//2], infofft[:N//2])
-    mpl.show()
-
-mpl.stem(w, infodft)
-mpl.show()
-
-print('bye')
+plt.show()
