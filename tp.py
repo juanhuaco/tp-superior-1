@@ -1,4 +1,5 @@
 from functools import reduce
+from pkg_resources import yield_lines
 from scipy.fft import fft
 from scipy import signal
 import numpy as np
@@ -9,20 +10,20 @@ import matplotlib.pyplot as plt
 #definir datos
 f = open("calamar_pda.txt")
 
-NoInteresa1 =  f.readline()
-DatosTiempo = f.readline()
-NoInteresa2 = f.readline()
-DatosPotencialMembrana = f.readline()
+info = f.readlines()
+
+DatosTiempo = info[1]
+DatosPotencialMembrana = info[3]
 
 PotencialMembrana = list(map(float, (DatosPotencialMembrana.split(","))))
-Tiempo =list(map(float, (DatosTiempo.split(","))))
+Tiempo = list(map(float, (DatosTiempo.split(","))))
 
 
 N = len(PotencialMembrana)
 T = 1 / N # 0.1/N
 
-yf = fft(PotencialMembrana)
-xf = np.linspace(0, 1/(2*T), N//2)
+PMfft = fft(PotencialMembrana)
+xf = np.linspace(0, 100 * N , N)
 
 #EJERCICIO1
 def ejercicio1():
@@ -30,20 +31,22 @@ def ejercicio1():
     fig, [ax1Ej1, ax2Ej1] = plt.subplots(nrows=1, ncols=2)
     fig.set_size_inches(13, 6)
 
-    ax1Ej1.plot(xf, 2/N * np.abs(PotencialMembrana[:N//2]), 1)
+
+    ax1Ej1.plot(xf, PotencialMembrana, 1)
     plt.subplot(1,2,1)
     plt.title("Ejercicio 1 - Sin Transformar")
     plt.ylabel("PotencialMembrana [mV]")
     plt.xlabel("Tiempo [ms]")
-
-    ax2Ej1.plot(xf, 2/N * np.abs(yf[:N//2]), 2)
-
+    plt.grid()
+ 
+    ax2Ej1.plot(xf, 2/N * np.abs(PMfft), 2)
     plt.subplot(1,2,2)
     plt.title("Ejercicio 1 - Transformado")
     plt.ylabel("Amplitud []")
     plt.xlabel("Frecuencia []")
+    plt.grid()
 
-    plt.show()
+    plt.savefig("./imagenes/ej1pic.png")
 
     return
 
@@ -57,32 +60,39 @@ def ejercicio2():
         else:
             return 0
 
-    def lomo( a, time_step, Ti, Tf):
-        if(a < 0):
-            a = -a
+    def getLoma(a, timeStep):
+        a = abs(a)
 
-        T = np.arange(Ti, Tf, time_step)
-        Y = []
+        loma = lambda p:  (funcion_escalon(p+a) - funcion_escalon(p-a)) / (2*a)
 
-        for i in T:
-            value = (funcion_escalon(i+a) - funcion_escalon(i-a)) / (2*a)
-            Y.append(value)
+        return loma
 
-        return (T, Y)
+    a = 20
+    timeStep = 1
 
-    a = 15
-    time_step = 1
+    y = np.linspace(-a, a, 2*a + 1)
+    f = getLoma(a, timeStep)
 
-    T, Y = lomo(a,time_step, -a, a + 1)
+    filtered = signal.convolve(PotencialMembrana, list(map(f, y)))
 
-    filtered = signal.convolve(PotencialMembrana, Y)
+    #plotting
+    fig, [ax1Ej2, ax2Ej2] = plt.subplots(nrows=1, ncols=2)
+    fig.set_size_inches(13, 6)
 
-    plt.plot(filtered)
+    ax1Ej2.plot(filtered)
+    plt.subplot(1,2,1)
     plt.title("Ejercicio 2 - Funcion Filtrada")
-    plt.show()
+    plt.grid()
 
-    plt.stem(T,Y)
+    fvalues = []
+    for i in y:
+        fvalues.append(f(i))
+
+    ax2Ej2.stem(y, fvalues)
+    plt.subplot(1,2,2)
     plt.title("Ejercicio 2 - Funcion Lomo")
+    plt.grid()
+
     plt.show()
 
     return
@@ -111,38 +121,44 @@ def ejercicio3():
         else:
             escalon.append(0)
 
-    plt.figure(1)
+    #plotting
+    #plotting
+    fig, ax = plt.subplots(nrows=2, ncols=2)
+    fig.set_size_inches(12, 8)
+
+    #plt.figure(1)
     plt.title('Filtro en la frecuencia')
-    plt.plot(cant_puntos, escalon, '.-')
+    plt.subplot(2,2,1)
+    ax[0,0].plot(cant_puntos, escalon, '.-')
     plt.grid()
-    plt.show()
 
 
     #Antitransformada
     antitransformada_escalon = np.fft.ifft(escalon)
 
-    plt.figure(2)
+    #plt.figure(2)
+    plt.subplot(2,2,2)
     plt.title('Antitransformada del filtro (sinc)')
-    plt.plot(cant_puntos, antitransformada_escalon)
+    ax[1,0].plot(cant_puntos, antitransformada_escalon)
     plt.grid()
     plt.xlim([0,1000])
-    plt.show()
 
     #Aplicar el filtro a la transformada del Potencial
     #Para aplicarlo hicimos una convolucion, multiplicamos en frecuencia y antitransformamos
     filtrada = escalon * yf
-    plt.figure(3)
+    #plt.figure(3)
+    plt.subplot(2,2,3)
     plt.title('Transformada del potencial filtrada')
-    plt.plot(cant_puntos, filtrada)
+    ax[0,1].plot(cant_puntos, filtrada)
     plt.grid()
-    #plt.show()
 
     antitransformada_filtrada = np.fft.ifft(filtrada)
-    plt.figure(4)
+    #plt.figure(4)
+    plt.subplot(2,2,4)
     plt.title('Antitransformada de filtrada')
-    plt.plot(cant_puntos, antitransformada_filtrada)
+    ax[1,1].plot(cant_puntos, antitransformada_filtrada)
     plt.grid()
-    #plt.show()
+    plt.show()
 
 def ejercicio4():
     print("ainda nao feito")
