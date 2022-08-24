@@ -1,6 +1,6 @@
 import tkinter as tk
 import tp
-
+from PIL import ImageTk,Image  
 
 def main():
     ventana = tk.Tk()
@@ -9,7 +9,11 @@ def main():
     
     def createNewWindow():
         ejercicioVentana = tk.Toplevel(ventana)
+        canvas = tk.Canvas(ejercicioVentana, width = 300, height = 300)      
+        canvas.pack()      
+        img = tk.PhotoImage(file="./imagenes/ej1pic.png")      
         
+        canvas.create_image(100,100, anchor="nw", image=img).pack()  
 
 
     label = tk.Label(ventana, text = "Matematica Superior TP1", height=2)

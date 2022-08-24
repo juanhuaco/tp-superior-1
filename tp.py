@@ -18,12 +18,15 @@ DatosPotencialMembrana = info[3]
 PotencialMembrana = list(map(float, (DatosPotencialMembrana.split(","))))
 Tiempo = list(map(float, (DatosTiempo.split(","))))
 
-
 N = len(PotencialMembrana)
-T = 1 / N # 0.1/N
+dt = 0.0001
+Fs = 1.0 / dt
+
 
 PMfft = fft(PotencialMembrana)
-xf = np.linspace(0, 100 * N , N)
+x = np.linspace(0, dt * N , N)
+
+w = Fs * np.linspace (-1/2, 1/2, N)
 
 #EJERCICIO1
 def ejercicio1():
@@ -32,14 +35,14 @@ def ejercicio1():
     fig.set_size_inches(13, 6)
 
 
-    ax1Ej1.plot(xf, PotencialMembrana, 1)
+    ax1Ej1.plot(x, PotencialMembrana, 1)
     plt.subplot(1,2,1)
     plt.title("Ejercicio 1 - Sin Transformar")
     plt.ylabel("PotencialMembrana [mV]")
     plt.xlabel("Tiempo [ms]")
     plt.grid()
  
-    ax2Ej1.plot(xf, 2/N * np.abs(PMfft), 2)
+    ax2Ej1.plot(w, np.abs(PMfft), 2)
     plt.subplot(1,2,2)
     plt.title("Ejercicio 1 - Transformado")
     plt.ylabel("Amplitud []")
