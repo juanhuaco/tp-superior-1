@@ -1,41 +1,28 @@
-from ast import AsyncFunctionDef
-import numpy as np
-import sympy as smp
-import scipy.fft as scp
-import matplotlib.pyplot as plt
+import tkinter as tk
+import tp
 
-#open file
-with open("./calamar_pda.txt") as f:
-    contents = f.readlines()
-    info = contents[1].split(',')
+def main():
+    ventana = tk.Tk()
+    ventana.geometry("200x160")
+    ventana.title("Matematica Superior TP1")
+    
+    label = tk.Label(ventana, text = "Matematica Superior TP1", height=2)
+    label.pack()
 
-#getttt info
-info = list(map(lambda e: float(e), info))
+    ejercicio1Btn = tk.Button(ventana, text="Ejercicio 1", command=tp.ejercicio1)
+    ejercicio1Btn.pack()
+
+    ejercicio2Btn = tk.Button(ventana, text="Ejercicio 2", command=tp.ejercicio2)
+    ejercicio2Btn.pack()
+
+    ejercicio3Btn = tk.Button(ventana, text="Ejercicio 3", command=tp.ejercicio3)
+    ejercicio3Btn.pack()
+
+    ejercicio4Btn = tk.Button(ventana, text="Ejercicio 4", command=tp.ejercicio4)
+    ejercicio4Btn.pack()
 
 
-#parameters
-Fs = 10_000 #sampling freq
-tstep = 1 / Fs #sample time interv
-N = len(info) #number of samples
-fstep = Fs / N #freq interval
+    ventana.mainloop()
 
-#segment graphic
-fig, [ax1, ax2] = plt.subplots(nrows=2, ncols=1)
-
-#plot original func
-
-t = np.linspace(0, (N-1)*tstep, N)
-ax1.plot(t, info)
-
-print('hasta aca todo bien')
-#===MUESTRA FUNCION TRANSFORMADA
-infofft = np.abs(np.fft.fft(info))
-# w = scp.fftfreq(len(t), np.diff(t)[0])
-f = np.linspace(0, (N-1)*fstep, N)
-if(len(f) == len(infofft)):
-    print('bien')
-    ax2.plot(f, infofft)
-else:
-    print('its not working')
-
-plt.show()
+if __name__ == '__main__':
+    main()
