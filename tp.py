@@ -69,7 +69,7 @@ def ejercicio2(a):
         return loma
 
 
-    y = np.linspace(-a, a, 2*a + 1)
+    y = np.linspace(-a*2, a*2, 4*a + 1)
     f = getLoma(a)
 
     filtered = signal.convolve(PotencialMembrana, list(map(f, y)))
@@ -105,14 +105,16 @@ def ejercicio3(b1, b2):
     def func2(n, b): return (1.0/b) * np.sinc( [ (n * 1.0 - 500) / b] )[0]
     
     #filtramos la se;al con el filtro1
-    amplitudFiltro1 = 20
+    amplitudFiltro1 = 1001
     dominioFiltro1 = np.linspace(-amplitudFiltro1, amplitudFiltro1, amplitudFiltro1*2+1)
     rangoFiltro1 = [func1(i, b1) for i in dominioFiltro1]
     
+    K = len(dominioFiltro1)
+
     funcFiltrada1 = signal.convolve(PotencialMembrana, rangoFiltro1, mode="same")
 
     #filtramos la se;al con el filtro2
-    amplitudFiltro2 = 20
+    amplitudFiltro2 = 1001
     dominioFiltro2 = np.linspace(-amplitudFiltro2, amplitudFiltro2, amplitudFiltro2*2+1)
     rangoFiltro2 = [func2(i, b2) for i in dominioFiltro2]
     
@@ -162,13 +164,21 @@ def ejercicio4(r, c):
     R = float(r)
     C = float(c)
 
-    def h(t): return 1.0 / (R * C) * np.exp(- 1.0 / (R * C)) * np.heaviside(t, 1)
+    fig, ax = plt.subplots(ncols=2, nrows=1)
+
+    #func sin filtro
+    plt.subplot(1,2,1)
+    plt.title("Funcion sin Filtrar")
+    ax[0].plot(x, PotencialMembrana)
+
+    def h(t): return 1.0 / (R * C) * np.exp(- t / (R * C)) * np.heaviside(t, 1)
 
     vg = PotencialMembrana
     # vg convolucionado con h = vo
 
-    vo = signal.convolve(vg, [h(i) for i in range(-10, 10)], mode="same")
+    vo = signal.convolve(vg, [h(i) for i in range(-500,500)], mode="same")
 
-    plt.title("Pasa bajos primer orden")
-    plt.plot(x, vo)
+    plt.subplot(1,2,2)
+    plt.title("Funcion filtrada")
+    ax[1].plot(x, vo)
     plt.show()
