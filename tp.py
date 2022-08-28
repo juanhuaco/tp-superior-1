@@ -45,35 +45,32 @@ def ejercicio1():
     ax2Ej1.plot(w, np.abs(PMfft), 2)
     plt.subplot(1,2,2)
     plt.title("Ejercicio 1 - Transformado")
-    plt.ylabel("Amplitud []")
-    plt.xlabel("Frecuencia []")
+    plt.ylabel("Amplitud")
+    plt.xlabel("Frecuencia")
     plt.grid()
 
-    plt.savefig("./imagenes/ej1pic.png")
     plt.show()
 
     return
 
 ### EJERCICIO2
-def ejercicio2():
+def ejercicio2(a):
     def escalon(t):
         if(t >= 0):
             return 1
         else:
             return 0
 
-    def getLoma(a, timeStep):
+    def getLoma(a):
         a = abs(a)
 
         loma = lambda p:  (escalon(p+a) - escalon(p-a)) / (2*a)
 
         return loma
 
-    a = 20
-    timeStep = 1
 
     y = np.linspace(-a, a, 2*a + 1)
-    f = getLoma(a, timeStep)
+    f = getLoma(a)
 
     filtered = signal.convolve(PotencialMembrana, list(map(f, y)))
 
@@ -100,10 +97,10 @@ def ejercicio2():
     return
 
 #EJERCICIO3
-def ejercicio3():
+def ejercicio3(b1, b2):
     #definiendo funciones
-    b1 = 5
-    b2 = 3
+
+
     def func1(n, b): return (1.0/b) * np.sinc([n * 1.0 / b])[0]
     def func2(n, b): return (1.0/b) * np.sinc( [ (n * 1.0 - 500) / b] )[0]
     
@@ -117,7 +114,7 @@ def ejercicio3():
     #filtramos la se;al con el filtro2
     amplitudFiltro2 = 20
     dominioFiltro2 = np.linspace(-amplitudFiltro2, amplitudFiltro2, amplitudFiltro2*2+1)
-    rangoFiltro2 = [func1(i, b2) for i in dominioFiltro2]
+    rangoFiltro2 = [func2(i, b2) for i in dominioFiltro2]
     
     funcFiltrada2 = signal.convolve(PotencialMembrana, rangoFiltro2, mode="same")
 
@@ -161,5 +158,17 @@ def ejercicio3():
     plt.grid()
     plt.show()
 
-def ejercicio4():
-    print("ainda nao feito")
+def ejercicio4(r, c):
+    R = float(r)
+    C = float(c)
+
+    def h(t): return 1.0 / (R * C) * np.exp(- 1.0 / (R * C)) * np.heaviside(t, 1)
+
+    vg = PotencialMembrana
+    # vg convolucionado con h = vo
+
+    vo = signal.convolve(vg, [h(i) for i in range(-10, 10)], mode="same")
+
+    plt.title("Pasa bajos primer orden")
+    plt.plot(x, vo)
+    plt.show()

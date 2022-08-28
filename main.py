@@ -1,5 +1,5 @@
 import tkinter as tk
-#import ventanas as v
+import ventanas as v
 import tp
 
 def main():
@@ -13,13 +13,13 @@ def main():
     ejercicio1Btn = tk.Button(ventana, text="Ejercicio 1", command= tp.ejercicio1)
     ejercicio1Btn.pack()
 
-    ejercicio2Btn = tk.Button(ventana, text="Ejercicio 2", command= tp.ejercicio2)
+    ejercicio2Btn = tk.Button(ventana, text="Ejercicio 2", command= lambda: v.crearVentana2(ventana))
     ejercicio2Btn.pack()
 
-    ejercicio3Btn = tk.Button(ventana, text="Ejercicio 3", command= tp.ejercicio3)
+    ejercicio3Btn = tk.Button(ventana, text="Ejercicio 3", command= lambda: v.crearVentana3(ventana))
     ejercicio3Btn.pack()
 
-    ejercicio4Btn = tk.Button(ventana, text="Ejercicio 4", command= tp.ejercicio4)
+    ejercicio4Btn = tk.Button(ventana, text="Ejercicio 4", command= lambda: v.crearVentana4(ventana))
     ejercicio4Btn.pack()
 
     exitBtn = tk.Button(ventana, text="Exit", command=ventana.quit)
