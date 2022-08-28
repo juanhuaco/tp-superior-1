@@ -50,14 +50,13 @@ def ejercicio1():
     plt.grid()
 
     plt.savefig("./imagenes/ej1pic.png")
+    plt.show()
 
     return
 
-
-
 ### EJERCICIO2
 def ejercicio2():
-    def funcion_escalon(t):
+    def escalon(t):
         if(t >= 0):
             return 1
         else:
@@ -66,7 +65,7 @@ def ejercicio2():
     def getLoma(a, timeStep):
         a = abs(a)
 
-        loma = lambda p:  (funcion_escalon(p+a) - funcion_escalon(p-a)) / (2*a)
+        loma = lambda p:  (escalon(p+a) - escalon(p-a)) / (2*a)
 
         return loma
 
@@ -100,29 +99,28 @@ def ejercicio2():
 
     return
 
-
-
-
 #EJERCICIO3
 def ejercicio3():
-    #Construccion del escalon en la frecuencia 3
+    #definiendo funciones
+    b1 = 5
+    b2 = 3
+    def func1(n, b): return (1.0/b) * np.sinc([n * 1.0 / b])[0]
+    def func2(n, b): return (1.0/b) * np.sinc( [ (n * 1.0 - 500) / b] )[0]
+    
+    #filtramos la se;al con el filtro1
+    amplitudFiltro1 = 20
+    dominioFiltro1 = np.linspace(-amplitudFiltro1, amplitudFiltro1, amplitudFiltro1*2+1)
+    rangoFiltro1 = [func1(i, b1) for i in dominioFiltro1]
+    
+    funcFiltrada1 = signal.convolve(PotencialMembrana, rangoFiltro1, mode="same")
 
+    #filtramos la se;al con el filtro2
+    amplitudFiltro2 = 20
+    dominioFiltro2 = np.linspace(-amplitudFiltro2, amplitudFiltro2, amplitudFiltro2*2+1)
+    rangoFiltro2 = [func1(i, b2) for i in dominioFiltro2]
+    
+    funcFiltrada2 = signal.convolve(PotencialMembrana, rangoFiltro2, mode="same")
 
-    escalon = []
-    N = len(PotencialMembrana) #1001 
-
-    cant_puntos = np.linspace(0, 10000, N)
-
-    b = 1000
-
-    #Con este for armamos el filtro ya espejado y con los 1001 puntos
-    for i in cant_puntos:
-        if ((i >= 0 and i < b) or (i >= (10000-b))):
-            escalon.append(1)
-        elif (i == b):
-            escalon.append(1/2)
-        else:
-            escalon.append(0)
 
     #plotting
     #plotting
@@ -130,36 +128,36 @@ def ejercicio3():
     fig.set_size_inches(12, 8)
 
     #plt.figure(1)
-    plt.title('Filtro en la frecuencia')
     plt.subplot(2,2,1)
-    ax[0,0].plot(cant_puntos, escalon, '.-')
+    plt.title('Funcion Filtrada por Filtro 1')
+    ax[0,0].plot(x, funcFiltrada1)
     plt.grid()
 
 
     #Antitransformada
-    antitransformada_escalon = np.fft.ifft(escalon)
+    #antitransformada_escalon = np.fft.ifft(escalon)
 
     #plt.figure(2)
     plt.subplot(2,2,2)
-    plt.title('Antitransformada del filtro (sinc)')
-    ax[1,0].plot(cant_puntos, antitransformada_escalon)
+    plt.title('Filtro 1')
+    ax[0, 1].plot(dominioFiltro1, rangoFiltro1)
     plt.grid()
-    plt.xlim([0,1000])
+    #plt.xlim([0,1000])
 
     #Aplicar el filtro a la transformada del Potencial
     #Para aplicarlo hicimos una convolucion, multiplicamos en frecuencia y antitransformamos
-    filtrada = escalon * yf
+    #filtrada = escalon * PMfft
     #plt.figure(3)
     plt.subplot(2,2,3)
-    plt.title('Transformada del potencial filtrada')
-    ax[0,1].plot(cant_puntos, filtrada)
+    plt.title('Funcion Filtrada por Filtro 2')
+    ax[1, 0].plot(x, funcFiltrada2)
     plt.grid()
 
-    antitransformada_filtrada = np.fft.ifft(filtrada)
+    #antitransformada_filtrada = np.fft.ifft(filtrada)
     #plt.figure(4)
     plt.subplot(2,2,4)
-    plt.title('Antitransformada de filtrada')
-    ax[1,1].plot(cant_puntos, antitransformada_filtrada)
+    plt.title('Filtro 2')
+    ax[1,1].plot(dominioFiltro2, rangoFiltro2)
     plt.grid()
     plt.show()
 
